@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bootstrap 101 Template</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">EPF Calculator</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container" id="content">
+      <div class="row">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Starting Salary</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.startSalary">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Average Salary Increment (%)</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.avgSalaryIncr">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Employer Contribution (%)</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.employerContrib" :disabled="config.autoEmployerContrib">
+            </div>
+            <div class="col-sm-2 checkbox">
+              <label>
+                <input type="checkbox" v-model="config.autoEmployerContrib"> Automatic
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Employee Contribution (%)</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.employeeContrib">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Average Dividend (%)</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.avgDividend">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Starting Year</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.startYear">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Starting Age</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.startAge">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Retirement Age</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.endAge">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Starting Balance</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" v-model="config.startBalance">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel panel-info" v-for="record in tabulated">
+        <div class="panel-heading">{{ record.year }} — Age {{ record.age }}</div>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th rowspan="2" class="text-center">Month</th>
+              <th rowspan="2" class="text-center">Days</th>
+              <th rowspan="2" class="text-right" width="11%">Salary</th>
+              <th colspan="2" class="text-center">Contribution</th>
+              <th colspan="2" class="text-center">Dividend</th>
+              <th colspan="3" class="text-center">Balance</th>
+            </tr>
+            <tr>
+              <th class="text-right" width="11%">Employer</th>
+              <th class="text-right" width="11%">Employee</th>
+
+              <th class="text-right">Rate</th>
+              <th class="text-right" width="11%">Amount</th>
+
+              <th class="text-right" width="11%">Total</th>
+              <th class="text-right" width="11%">Account 1</th>
+              <th class="text-right" width="11%">Account 2</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr class="active">
+              <td colspan="7"></td>
+              <td class="text-right">{{ currency(record.balance) }}</td>
+              <td class="text-right">{{ currency(record.balance * 0.7) }}</td>
+              <td class="text-right">{{ currency(record.balance * 0.3) }}</td>
+            </tr>
+            <tr v-for="row in record.rows">
+              <td class="text-center">{{ row.month }}</td>
+              <td class="text-center">{{ row.days }}</td>
+              <td class="text-right">{{ currency(row.salary) }}</td>
+              <td class="text-right">{{ currency(row.contrib.employer) }}</td>
+              <td class="text-right">{{ currency(row.contrib.employee) }}</td>
+
+              <td class="text-right">{{ percentage(row.dividend.rate) }}</td>
+              <td class="text-right">{{ currency(row.dividend.amount) }}</td>
+
+              <td class="text-right">{{ currency(row.balance) }}</td>
+              <td class="text-right">{{ currency(row.balance * 0.7) }}</td>
+              <td class="text-right">{{ currency(row.balance * 0.3) }}</td>
+            </tr>
+            <tr class="active">
+              <td class="text-center"></td>
+              <td class="text-center">{{ record.total.days }}</td>
+              <td class="text-right">{{ currency(record.total.salary) }}</td>
+              <td class="text-right">{{ currency(record.total.contrib.employer) }}</td>
+              <td class="text-right">{{ currency(record.total.contrib.employee) }}</td>
+
+              <td class="text-right"></td>
+              <td class="text-right">{{ currency(record.total.dividend.amount) }}</td>
+
+              <td class="text-right">{{ currency(record.total.balance) }}</td>
+              <td class="text-right">{{ currency(record.total.balance * 0.7) }}</td>
+              <td class="text-right">{{ currency(record.total.balance * 0.3) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
