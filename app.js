@@ -118,5 +118,37 @@ var app = new Vue({
 		numberWithCommas: function (x) {
 		    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		},
-	}
+	},
+	watch: {
+		"config.startSalary": function (value) {
+			if (value == "") {
+				this.config.startSalary = 2500;
+			}
+		},
+		"config.avgDividend": function (value) {
+			if (value == "") {
+				this.config.avgDividend = 5;
+			}
+		},
+		"config.startYear": function (value) {
+			if (value == "") {
+				this.config.startYear = new Date().getFullYear();
+			}
+		},
+		"config.startAge": function (value) {
+			if (value == "") {
+				this.config.startAge = 25;
+			}
+		},
+		"config.endAge": function (value) {
+			if (value == "") {
+				this.config.endAge = 55;
+			}
+		},
+		"config.startBalance": function (value) {
+			if (value == "") {
+				this.config.startBalance = 0;
+			}
+		},
+	},
 })
