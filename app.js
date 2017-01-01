@@ -73,6 +73,9 @@ var app = new Vue({
 		],
 		totalDays: 365,
 	},
+	mounted: function () {
+		this.drawGraph();
+	},
 	computed: {
 		tabulated: function () {
 			var table = [];
@@ -102,7 +105,11 @@ var app = new Vue({
 							amount: 0.0,
 						},
 						balance: 0.0,
-					}
+					},
+
+					employee: 0.0,
+					employer: 0.0,
+					dividend: 0.0,
 				};
 
 				if (this.config.autoEmployerContrib) {
@@ -142,6 +149,10 @@ var app = new Vue({
 
 				record.total.balance += record.total.dividend.amount;
 
+				record.employee = record.total.contrib.employee;
+				record.employer = record.total.contrib.employer;
+				record.dividend = record.total.dividend.amount;
+
 				table.push(record);
 
 				year++;
@@ -169,27 +180,124 @@ var app = new Vue({
 		numberWithCommas: function (x) {
 		    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		},
+		drawGraph: function() {
+			d3.selectAll("svg > *").remove();
+
+			var svg = d3.select("svg"),
+			    margin = {top: 20, right: 20, bottom: 30, left: 40},
+			    width = +svg.attr("width") - margin.left - margin.right,
+			    height = +svg.attr("height") - margin.top - margin.bottom,
+			    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			var x = d3.scaleBand()
+			    .rangeRound([0, width])
+			    .paddingInner(0.05)
+			    .align(0.1);
+
+			var y = d3.scaleLinear()
+			    .rangeRound([height, 0]);
+
+			var z = d3.scaleOrdinal()
+			    .range(["#aaaaaa", "#2ca02c", "#1f77b4", "#ff8c00"]);
+
+			var keys = ["Balance", "Employee Contribution", "Employer Contribution", "Dividend"];
+			var data = this.tabulated;
+
+			x.domain(data.map(function(d) { return d.year; }));
+			y.domain([0, d3.max(data, function(d) { return d.total.balance; })]).nice();
+			z.domain(keys);
+
+			g.append("g")
+		    .selectAll("g")
+		    .data(d3.stack().keys(["balance", "employee", "employer", "dividend"])(data))
+		    .enter().append("g")
+		      .attr("fill", function(d) { return z(d.key); })
+		    .selectAll("rect")
+		    .data(function(d) { return d; })
+		    .enter().append("rect")
+		      .attr("x", function(d) { console.log(d); return x(d.data.year); })
+		      .attr("y", function(d) { return y(d[1]); })
+		      .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+		      .attr("width", x.bandwidth());
+
+			g.append("g")
+			      .attr("class", "axis")
+			      .attr("transform", "translate(0," + height + ")")
+			      .call(d3.axisBottom(x));
+
+			  g.append("g")
+			      .attr("class", "axis")
+			      .call(d3.axisLeft(y).ticks(null, "s"))
+			    .append("text")
+			      .attr("x", 2)
+			      .attr("y", y(y.ticks().pop()) + 0.5)
+			      .attr("dy", "0.32em")
+			      .attr("fill", "#000")
+			      .attr("font-weight", "bold")
+			      .attr("text-anchor", "start")
+			      .text("RM");
+
+			var legend = g.append("g")
+			      .attr("font-family", "sans-serif")
+			      .attr("font-size", 10)
+			      .attr("text-anchor", "end")
+			    .selectAll("g")
+			    .data(keys.slice().reverse())
+			    .enter().append("g")
+			      .attr("transform", function(d, i) { return "translate(-200," + i * 20 + ")"; });
+
+			  legend.append("rect")
+			      .attr("x", width - 19)
+			      .attr("width", 19)
+			      .attr("height", 19)
+			      .attr("fill", z);
+
+			  legend.append("text")
+			      .attr("x", width - 24)
+			      .attr("y", 9.5)
+			      .attr("dy", "0.32em")
+			      .text(function(d) { return d; });
+		}
 	},
 	watch: {
+		"config.startSalary": function (value) {
+			this.drawGraph();
+		},
+		"config.avgSalaryIncr": function (value) {
+			this.drawGraph();
+		},
+		"config.employerContrib": function (value) {
+			this.drawGraph();
+		},
+		"config.employeeContrib": function (value) {
+			this.drawGraph();
+		},
 		"config.avgDividend": function (value) {
 			if (value == "") {
 				this.config.avgDividend = 5;
 			}
+			this.drawGraph();
 		},
 		"config.startYear": function (value) {
 			if (value == "") {
 				this.config.startYear = new Date().getFullYear();
 			}
+			this.drawGraph();
 		},
 		"config.startAge": function (value) {
 			if (value == "") {
 				this.config.startAge = 25;
 			}
+			this.drawGraph();
 		},
 		"config.endAge": function (value) {
 			if (value == "") {
 				this.config.endAge = 55;
 			}
+			this.drawGraph();
+		},
+		"config.startBalance": function (value) {
+			this.drawGraph();
 		},
 	},
 })
