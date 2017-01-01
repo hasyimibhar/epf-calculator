@@ -1,6 +1,50 @@
+Vue.component('currency', {
+	template: '<input ref="input" class="form-control" v-bind:value="value"\
+		v-on:input="updateValue($event.target.value)" style="text-align:right">',
+	props: ['value'],
+	data: function () {
+		return {
+			old: 0,
+		}
+	},
+	mounted: function () {
+		this.formatValue();
+	},
+	methods: {
+		numberWithCommas: function (x) {
+		    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		},
+		formatValue: function () {
+			var actual = this.numberWithCommas(Number(this.value).toFixed(2));
+			this.$refs.input.value = actual;
+			this.old = actual;
+    	},
+		updateValue: function (value) {
+			var cents = Number(value.replace('.','').split(',').join(''));
+
+			var actual = 0;
+			if (isNaN(cents)) {
+				actual = Number(this.old.replace('.','').split(',').join(''));
+			} else {
+				actual = cents;
+			}
+
+			actual = this.numberWithCommas((actual/100.0).toFixed(2));
+
+			if (actual !== value) {
+				this.$refs.input.value = actual;
+			}
+
+			this.$emit('input', actual);
+			this.old = actual;
+		},
+	}
+})
+
 var app = new Vue({
 	el: '#content',
 	data: {
+		test: 0,
 		config: {
 			startSalary: 2500,
 			avgSalaryIncr: 3.0,
@@ -33,8 +77,8 @@ var app = new Vue({
 		tabulated: function () {
 			var table = [];
 			var year = this.config.startYear;
-			var salary = this.config.startSalary;
-			var balance = this.config.startBalance;
+			var salary = this.number(this.config.startSalary);
+			var balance = this.number(this.config.startBalance);
 
 			for (var age = this.config.startAge; age <= this.config.endAge; age++) {
 				var record = {
@@ -109,8 +153,11 @@ var app = new Vue({
 		}
 	},
 	methods: {
+		number: function (value) {
+			return Number(value.toString().split(',').join(''));
+		},
 		currency: function (value) {
-			return this.numberWithCommas(value.toFixed(2));
+			return this.numberWithCommas(Number(value).toFixed(2));
 		},
 		percentage: function (value) {
 			return value.toFixed(2) + '%';
@@ -120,11 +167,6 @@ var app = new Vue({
 		},
 	},
 	watch: {
-		"config.startSalary": function (value) {
-			if (value == "") {
-				this.config.startSalary = 2500;
-			}
-		},
 		"config.avgDividend": function (value) {
 			if (value == "") {
 				this.config.avgDividend = 5;
@@ -143,11 +185,6 @@ var app = new Vue({
 		"config.endAge": function (value) {
 			if (value == "") {
 				this.config.endAge = 55;
-			}
-		},
-		"config.startBalance": function (value) {
-			if (value == "") {
-				this.config.startBalance = 0;
 			}
 		},
 	},
