@@ -17,151 +17,145 @@
     <![endif]-->
   </head>
   <body>
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">EPF Calculator</a>
-        </div>
-      </div>
-    </nav>
 
     <div class="container" id="content">
       <div class="row">
-        <form class="form-horizontal">
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Starting Salary</label>
-            <div class="col-sm-2">
-              <currency v-model="config.startSalary"></currency>
-            </div>
+        <div class="col-md-8">
+          <div class="row">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Starting Salary</label>
+                <div class="col-sm-2">
+                  <currency v-model="config.startSalary"></currency>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Average Salary Increment (%)</label>
+                <div class="col-sm-2">
+                  <input type="number" class="form-control" v-model="config.avgSalaryIncr">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Employer Contribution (%)</label>
+                <div class="col-sm-2">
+                  <input type="number" class="form-control" v-model="config.employerContrib" :disabled="config.autoEmployerContrib">
+                </div>
+                <div class="col-sm-2 checkbox">
+                  <label>
+                    <input type="checkbox" v-model="config.autoEmployerContrib"> Automatic
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Employee Contribution (%)</label>
+                <div class="col-sm-2">
+                  <input type="number" class="form-control" v-model="config.employeeContrib">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Average Dividend (%)</label>
+                <div class="col-sm-2">
+                  <input type="number" class="form-control" v-model="config.avgDividend">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Starting Year</label>
+                <div class="col-sm-2">
+                  <input type="number" class="form-control" v-model="config.startYear">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Starting Age</label>
+                <div class="col-sm-2">
+                  <input type="number" class="form-control" v-model="config.startAge">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Retirement Age</label>
+                <div class="col-sm-2">
+                  <input type="number" class="form-control" v-model="config.endAge">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Starting Balance</label>
+                <div class="col-sm-2">
+                  <currency v-model="config.startBalance"></currency>
+                </div>
+              </div>
+            </form>
           </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Average Salary Increment (%)</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" v-model="config.avgSalaryIncr">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Employer Contribution (%)</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" v-model="config.employerContrib" :disabled="config.autoEmployerContrib">
-            </div>
-            <div class="col-sm-2 checkbox">
-              <label>
-                <input type="checkbox" v-model="config.autoEmployerContrib"> Automatic
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Employee Contribution (%)</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" v-model="config.employeeContrib">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Average Dividend (%)</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" v-model="config.avgDividend">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Starting Year</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" v-model="config.startYear">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Starting Age</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" v-model="config.startAge">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Retirement Age</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" v-model="config.endAge">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Starting Balance</label>
-            <div class="col-sm-2">
-              <currency v-model="config.startBalance"></currency>
-            </div>
-          </div>
-        </form>
-      </div>
 
-      <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4 text-center">
-          <p>You will retire with</p>
-          <p><h1><span class="label label-success">RM {{ currency(finalBalance) }}</span></h1></p>
-          <p>in your EPF if you don't touch it.</p>
+          <div class="panel panel-info" v-for="record in tabulated">
+            <div class="panel-heading">{{ record.year }} — Age {{ record.age }}</div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th rowspan="2" class="text-center">Month</th>
+                  <th rowspan="2" class="text-center">Days</th>
+                  <th rowspan="2" class="text-right" width="11%">Salary</th>
+                  <th colspan="2" class="text-center">Contribution</th>
+                  <th colspan="2" class="text-center">Dividend</th>
+                  <th colspan="3" class="text-center">Balance</th>
+                </tr>
+                <tr>
+                  <th class="text-right" width="11%">Employer</th>
+                  <th class="text-right" width="11%">Employee</th>
+
+                  <th class="text-right">Rate</th>
+                  <th class="text-right" width="11%">Amount</th>
+
+                  <th class="text-right" width="11%">Total</th>
+                  <th class="text-right" width="11%">Account 1</th>
+                  <th class="text-right" width="11%">Account 2</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr class="active">
+                  <td colspan="7"></td>
+                  <td class="text-right">{{ currency(record.balance) }}</td>
+                  <td class="text-right">{{ currency(record.balance * 0.7) }}</td>
+                  <td class="text-right">{{ currency(record.balance * 0.3) }}</td>
+                </tr>
+                <tr v-for="row in record.rows">
+                  <td class="text-center">{{ row.month }}</td>
+                  <td class="text-center">{{ row.days }}</td>
+                  <td class="text-right">{{ currency(row.salary) }}</td>
+                  <td class="text-right">{{ currency(row.contrib.employer) }}</td>
+                  <td class="text-right">{{ currency(row.contrib.employee) }}</td>
+
+                  <td class="text-right">{{ percentage(row.dividend.rate) }}</td>
+                  <td class="text-right">{{ currency(row.dividend.amount) }}</td>
+
+                  <td class="text-right">{{ currency(row.balance) }}</td>
+                  <td class="text-right">{{ currency(row.balance * 0.7) }}</td>
+                  <td class="text-right">{{ currency(row.balance * 0.3) }}</td>
+                </tr>
+                <tr class="active">
+                  <td class="text-center"></td>
+                  <td class="text-center">{{ record.total.days }}</td>
+                  <td class="text-right">{{ currency(record.total.salary) }}</td>
+                  <td class="text-right">{{ currency(record.total.contrib.employer) }}</td>
+                  <td class="text-right">{{ currency(record.total.contrib.employee) }}</td>
+
+                  <td class="text-right"></td>
+                  <td class="text-right">{{ currency(record.total.dividend.amount) }}</td>
+
+                  <td class="text-right">{{ currency(record.total.balance) }}</td>
+                  <td class="text-right">{{ currency(record.total.balance * 0.7) }}</td>
+                  <td class="text-right">{{ currency(record.total.balance * 0.3) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="col-md-4"></div>
-      </div>
-
-      <div class="panel panel-info" v-for="record in tabulated">
-        <div class="panel-heading">{{ record.year }} — Age {{ record.age }}</div>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th rowspan="2" class="text-center">Month</th>
-              <th rowspan="2" class="text-center">Days</th>
-              <th rowspan="2" class="text-right" width="11%">Salary</th>
-              <th colspan="2" class="text-center">Contribution</th>
-              <th colspan="2" class="text-center">Dividend</th>
-              <th colspan="3" class="text-center">Balance</th>
-            </tr>
-            <tr>
-              <th class="text-right" width="11%">Employer</th>
-              <th class="text-right" width="11%">Employee</th>
-
-              <th class="text-right">Rate</th>
-              <th class="text-right" width="11%">Amount</th>
-
-              <th class="text-right" width="11%">Total</th>
-              <th class="text-right" width="11%">Account 1</th>
-              <th class="text-right" width="11%">Account 2</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr class="active">
-              <td colspan="7"></td>
-              <td class="text-right">{{ currency(record.balance) }}</td>
-              <td class="text-right">{{ currency(record.balance * 0.7) }}</td>
-              <td class="text-right">{{ currency(record.balance * 0.3) }}</td>
-            </tr>
-            <tr v-for="row in record.rows">
-              <td class="text-center">{{ row.month }}</td>
-              <td class="text-center">{{ row.days }}</td>
-              <td class="text-right">{{ currency(row.salary) }}</td>
-              <td class="text-right">{{ currency(row.contrib.employer) }}</td>
-              <td class="text-right">{{ currency(row.contrib.employee) }}</td>
-
-              <td class="text-right">{{ percentage(row.dividend.rate) }}</td>
-              <td class="text-right">{{ currency(row.dividend.amount) }}</td>
-
-              <td class="text-right">{{ currency(row.balance) }}</td>
-              <td class="text-right">{{ currency(row.balance * 0.7) }}</td>
-              <td class="text-right">{{ currency(row.balance * 0.3) }}</td>
-            </tr>
-            <tr class="active">
-              <td class="text-center"></td>
-              <td class="text-center">{{ record.total.days }}</td>
-              <td class="text-right">{{ currency(record.total.salary) }}</td>
-              <td class="text-right">{{ currency(record.total.contrib.employer) }}</td>
-              <td class="text-right">{{ currency(record.total.contrib.employee) }}</td>
-
-              <td class="text-right"></td>
-              <td class="text-right">{{ currency(record.total.dividend.amount) }}</td>
-
-              <td class="text-right">{{ currency(record.total.balance) }}</td>
-              <td class="text-right">{{ currency(record.total.balance * 0.7) }}</td>
-              <td class="text-right">{{ currency(record.total.balance * 0.3) }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="col-md-4">
+          <div class="affix text-center">
+            <p>You will retire with</p>
+            <p><h1><span class="label label-success">RM {{ currency(finalBalance) }}</span></h1></p>
+            <p>in your EPF if you don't touch it.</p>
+          </div>
+        </div>
       </div>
     </div>
 
