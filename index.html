@@ -90,6 +90,16 @@
         </form>
       </div>
 
+      <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 text-center">
+          <p>You will retire with</p>
+          <p><h1><span class="label label-success">RM {{ currency(finalBalance) }}</span></h1></p>
+          <p>in your EPF if you don't touch it.</p>
+        </div>
+        <div class="col-md-4"></div>
+      </div>
+
       <div class="panel panel-info" v-for="record in tabulated">
         <div class="panel-heading">{{ record.year }} — Age {{ record.age }}</div>
         <table class="table table-bordered">

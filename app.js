@@ -150,7 +150,11 @@ var app = new Vue({
 			}
 
 			return table;
-		}
+		},
+		finalBalance: function () {
+			var table = this.tabulated;
+			return table[table.length-1].total.balance;
+		},
 	},
 	methods: {
 		number: function (value) {
