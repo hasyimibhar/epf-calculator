@@ -51,7 +51,7 @@ var app = new Vue({
 			employerContrib: 13.0,
 			employeeContrib: 11.0,
 			autoEmployerContrib: true,
-			avgDividend: 5.0,
+			avgDividend: 5.5,
 			startYear: 2017,
 			startAge: 25,
 			endAge: 55,
