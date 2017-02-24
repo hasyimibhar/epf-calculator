@@ -1,0 +1,15 @@
+.summary {
+	margin-bottom: 20px;
+}
+
+.summary .label {
+	display: block;
+}
+
+.summary h1 {
+	margin: 10px;
+}
+
+.summary h3 {
+	margin: 10px;
+}

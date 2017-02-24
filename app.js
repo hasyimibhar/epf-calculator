@@ -166,6 +166,22 @@ var app = new Vue({
 			var table = this.tabulated;
 			return table[table.length-1].total.balance;
 		},
+		totalContribution: function() {
+			return this.tabulated.reduce(function (total, current) {
+				total.employee += current.total.contrib.employee;
+				total.employer += current.total.contrib.employer;
+				return total;
+			}, {
+				employee: 0,
+				employer: 0,
+			});
+		},
+		totalYears: function() {
+			return this.config.endAge - this.config.startAge;
+		},
+		roi: function () {
+			return ((this.finalBalance - this.totalContribution.employee) / this.totalContribution.employee) * 100.0;
+		}
 	},
 	methods: {
 		number: function (value) {
