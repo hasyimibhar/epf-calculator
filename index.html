@@ -21,6 +21,7 @@
 
     <div class="container" id="content">
       <div class="row">
+        <div class="col-md-2"></div>
         <div class="col-md-8">
           <h1>Funding Your Retirement with EPF</h1>
 
@@ -45,10 +46,11 @@
           can resist the temptation to touch the money for whatever reasons.
           </p>
         </div>
+        <div class="col-md-2"></div>
       </div>
 
 
-      <div class="row">
+      <div class="row config">
         <div class="col-md-8">
           <div class="row">
             <form class="form-horizontal">
@@ -113,74 +115,6 @@
               </div>
             </form>
           </div>
-
-          <div class="row">
-            <svg width="960" height="500"></svg>
-          </div>
-
-          <div class="panel panel-info" v-for="record in tabulated">
-            <div class="panel-heading">{{ record.year }} — Age {{ record.age }}</div>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th rowspan="2" class="text-center">Month</th>
-                  <th rowspan="2" class="text-center">Days</th>
-                  <th rowspan="2" class="text-right" width="11%">Salary</th>
-                  <th colspan="2" class="text-center">Contribution</th>
-                  <th colspan="2" class="text-center">Dividend</th>
-                  <th colspan="3" class="text-center">Balance</th>
-                </tr>
-                <tr>
-                  <th class="text-right" width="11%">Employer</th>
-                  <th class="text-right" width="11%">Employee</th>
-
-                  <th class="text-right">Rate</th>
-                  <th class="text-right" width="11%">Amount</th>
-
-                  <th class="text-right" width="11%">Total</th>
-                  <th class="text-right" width="11%">Account 1</th>
-                  <th class="text-right" width="11%">Account 2</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr class="active">
-                  <td colspan="7"></td>
-                  <td class="text-right">{{ currency(record.balance) }}</td>
-                  <td class="text-right">{{ currency(record.balance * 0.7) }}</td>
-                  <td class="text-right">{{ currency(record.balance * 0.3) }}</td>
-                </tr>
-                <tr v-for="row in record.rows">
-                  <td class="text-center">{{ row.month }}</td>
-                  <td class="text-center">{{ row.days }}</td>
-                  <td class="text-right">{{ currency(row.salary) }}</td>
-                  <td class="text-right">{{ currency(row.contrib.employer) }}</td>
-                  <td class="text-right">{{ currency(row.contrib.employee) }}</td>
-
-                  <td class="text-right">{{ percentage(row.dividend.rate) }}</td>
-                  <td class="text-right">{{ currency(row.dividend.amount) }}</td>
-
-                  <td class="text-right">{{ currency(row.balance) }}</td>
-                  <td class="text-right">{{ currency(row.balance * 0.7) }}</td>
-                  <td class="text-right">{{ currency(row.balance * 0.3) }}</td>
-                </tr>
-                <tr class="active">
-                  <td class="text-center"></td>
-                  <td class="text-center">{{ record.total.days }}</td>
-                  <td class="text-right">{{ currency(record.total.salary) }}</td>
-                  <td class="text-right">{{ currency(record.total.contrib.employer) }}</td>
-                  <td class="text-right">{{ currency(record.total.contrib.employee) }}</td>
-
-                  <td class="text-right"></td>
-                  <td class="text-right">{{ currency(record.total.dividend.amount) }}</td>
-
-                  <td class="text-right">{{ currency(record.total.balance) }}</td>
-                  <td class="text-right">{{ currency(record.total.balance * 0.7) }}</td>
-                  <td class="text-right">{{ currency(record.total.balance * 0.3) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
         <div class="col-md-4">
           <div class="row summary">
@@ -205,6 +139,76 @@
               <p><h3><span class="label label-info">{{ percentage(roi) }}</span></h3></p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="row text-center chart">
+        <svg width="960" height="500"></svg>
+      </div>
+
+      <div class="row" v-for="record in tabulated">
+        <div class="panel panel-info">
+          <div class="panel-heading">{{ record.year }} — Age {{ record.age }}</div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th rowspan="2" class="text-center">Month</th>
+                <th rowspan="2" class="text-center">Days</th>
+                <th rowspan="2" class="text-right" width="11%">Salary</th>
+                <th colspan="2" class="text-center">Contribution</th>
+                <th colspan="2" class="text-center">Dividend</th>
+                <th colspan="3" class="text-center">Balance</th>
+              </tr>
+              <tr>
+                <th class="text-right" width="11%">Employer</th>
+                <th class="text-right" width="11%">Employee</th>
+
+                <th class="text-right">Rate</th>
+                <th class="text-right" width="11%">Amount</th>
+
+                <th class="text-right" width="11%">Total</th>
+                <th class="text-right" width="11%">Account 1</th>
+                <th class="text-right" width="11%">Account 2</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr class="active">
+                <td colspan="7"></td>
+                <td class="text-right">{{ currency(record.balance) }}</td>
+                <td class="text-right">{{ currency(record.balance * 0.7) }}</td>
+                <td class="text-right">{{ currency(record.balance * 0.3) }}</td>
+              </tr>
+              <tr v-for="row in record.rows">
+                <td class="text-center">{{ row.month }}</td>
+                <td class="text-center">{{ row.days }}</td>
+                <td class="text-right">{{ currency(row.salary) }}</td>
+                <td class="text-right">{{ currency(row.contrib.employer) }}</td>
+                <td class="text-right">{{ currency(row.contrib.employee) }}</td>
+
+                <td class="text-right">{{ percentage(row.dividend.rate) }}</td>
+                <td class="text-right">{{ currency(row.dividend.amount) }}</td>
+
+                <td class="text-right">{{ currency(row.balance) }}</td>
+                <td class="text-right">{{ currency(row.balance * 0.7) }}</td>
+                <td class="text-right">{{ currency(row.balance * 0.3) }}</td>
+              </tr>
+              <tr class="active">
+                <td class="text-center"></td>
+                <td class="text-center">{{ record.total.days }}</td>
+                <td class="text-right">{{ currency(record.total.salary) }}</td>
+                <td class="text-right">{{ currency(record.total.contrib.employer) }}</td>
+                <td class="text-right">{{ currency(record.total.contrib.employee) }}</td>
+
+                <td class="text-right"></td>
+                <td class="text-right">{{ currency(record.total.dividend.amount) }}</td>
+
+                <td class="text-right">{{ currency(record.total.balance) }}</td>
+                <td class="text-right">{{ currency(record.total.balance * 0.7) }}</td>
+                <td class="text-right">{{ currency(record.total.balance * 0.3) }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
