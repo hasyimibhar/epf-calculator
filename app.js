@@ -83,14 +83,16 @@ var app = new Vue({
 			var salary = this.number(this.config.startSalary);
 			var balance = this.number(this.config.startBalance);
 
-			for (var age = this.config.startAge; age <= this.config.endAge; age++) {
+			var endAge = Math.max(55, this.config.endAge);
+
+			for (var age = this.config.startAge; age <= endAge; age++) {
 				var record = {
 					age: age,
 					year: year,
-					salary: salary,
+					salary: age <= this.config.endAge ? salary : 0,
 					contrib: {
-						employer: salary * (this.config.employerContrib/100.0),
-						employee: salary * (this.config.employeeContrib/100.0),
+						employer: age <= this.config.endAge ? salary * (this.config.employerContrib/100.0) : 0,
+						employee: age <= this.config.endAge ? salary * (this.config.employeeContrib/100.0) : 0,
 					},
 					balance: balance,
 					rows: [],
@@ -113,7 +115,7 @@ var app = new Vue({
 				};
 
 				if (this.config.autoEmployerContrib) {
-					record.contrib.employer = salary * (salary > 5000 ? 0.12 : 0.13);
+					record.contrib.employer = age <= this.config.endAge ? salary * (salary > 5000 ? 0.12 : 0.13) : 0;
 				}
 
 				for (var i = 0; i < this.months.length; i++) {
@@ -121,10 +123,10 @@ var app = new Vue({
 					var row = {
 						month: month.name,
 						days: month.days,
-						salary: salary,
+						salary: age <= this.config.endAge ? salary : 0,
 						contrib: {
-							employer: record.contrib.employer,
-							employee: record.contrib.employee,
+							employer: age <= this.config.endAge ? record.contrib.employer : 0,
+							employee: age <= this.config.endAge ? record.contrib.employee : 0,
 						},
 						dividend: {
 							rate: this.config.avgDividend,
